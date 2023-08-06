@@ -1,0 +1,1 @@
+# Add a new person for every new line as person:amount
