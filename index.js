@@ -24,7 +24,7 @@ fs.readFile(fileName, 'utf-8', (err, data) => {
         });
 
     // ! 2. print the total amount spent
-    const totalAmountSpent = expenditure.reduce(
+    let totalAmountSpent = expenditure.reduce(
         (total, person) => total + Number(person.amountSpent),
         0,
     );
@@ -38,19 +38,20 @@ fs.readFile(fileName, 'utf-8', (err, data) => {
 
     // ! 3. Calculate the least number of transactions required
     console.log(chalk.blue('Transactions:'));
-    const totalAmountOwed = expenditure.reduce(
+    totalAmountSpent = expenditure.reduce(
         (total, person) => total + Number(person.amountSpent),
         0,
     );
+    const averageAmountSpent = totalAmountSpent / expenditure.length;
     const amountOwedToEachPerson = expenditure.reduce((obj, person) => {
-      obj[person.name] = Number(person.amountSpent);
+      obj[person.name] = averageAmountSpent;
       return obj;
     }, {});
-    const averageAmountOwed = totalAmountOwed / expenditure.length;
     const differences = expenditure.map((person) => {
       return {
         name: person.name,
-        difference: amountOwedToEachPerson[person.name] - averageAmountOwed,
+        difference:
+        amountOwedToEachPerson[person.name] - Number(person.amountSpent),
       };
     });
     differences.sort((a, b) => a.difference - b.difference);
@@ -60,9 +61,16 @@ fs.readFile(fileName, 'utf-8', (err, data) => {
       const from = differences[i];
       const to = differences[j];
       const amount = Math.min(-from.difference, to.difference);
-      console.log(`${from.name} -> ${to.name} $${amount.toFixed(2)}`);
-      amountOwedToEachPerson[from.name] += amount;
-      amountOwedToEachPerson[to.name] -= amount;
+      if (!isNaN(amount)) {
+        if (amount > 0) {
+          console.log(`${to.name} -> ${from.name} $${amount.toFixed(2)}`);
+        } else {
+          const fixedAmount = Math.abs(amount.toFixed(2));
+          console.log(`${from.name} -> ${to.name} $${fixedAmount}`);
+        }
+        amountOwedToEachPerson[from.name] += amount;
+        amountOwedToEachPerson[to.name] -= amount;
+      }
       if (from.difference + amount === 0) {
         i++;
       }

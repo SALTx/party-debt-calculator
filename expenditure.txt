@@ -1,1 +1,5 @@
 # Add a new person for every new line as person:amount
+john:100
+jane:50
+mark:0
+spencer:0
