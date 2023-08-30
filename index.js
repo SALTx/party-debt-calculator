@@ -51,7 +51,7 @@ fs.readFile(fileName, 'utf-8', (err, data) => {
       return {
         name: person.name,
         difference:
-        amountOwedToEachPerson[person.name] - Number(person.amountSpent),
+          amountOwedToEachPerson[person.name] - Number(person.amountSpent),
       };
     });
     differences.sort((a, b) => a.difference - b.difference);
